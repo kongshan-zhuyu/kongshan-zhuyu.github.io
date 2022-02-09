@@ -208,7 +208,9 @@
 <li>__ proto __：当前对象的原型对象</li>
 <li>prototype：把当前函数作为构造函数对象的原型对象</li>
 </ul>
-<img src="doubt.png" alt="image-20201210220131468" style="zoom:50%;" />
+<center>
+    <img src="doubt.png" alt="image-20201210220131468" style="zoom:50%;" />
+</center>
 
 <p>是不是有点绕，为了真正理解它的的含义我们需要明确几点：</p>
 <ul>
@@ -218,7 +220,10 @@
 <li>所有对象的最上层原型都是Object</li>
 </ul>
 <p>图解版：</p>
-<p><img src="prototype.png" alt="Untitled Diagram"></p>
+<center>
+    <img src="prototype.png" />
+</center>
+
 <p>对比：</p>
 <table>
 <thead>
@@ -272,7 +277,9 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 普通形式</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">person</span>(<span class="params">name, age</span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">&#x27;my name is &#x27;</span>+ name, <span class="string">&#x27;my age is &#x27;</span> + age)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">coriolisFn</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">age</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;my name is &#x27;</span>+ name, <span class="string">&#x27;my age is &#x27;</span> + age)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">coriolisFn(name)(age)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现-1</span></span><br><span class="line"><span class="keyword">const</span> coriolisFn = <span class="function">(<span class="params">fn, arg=[]</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">...args</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> argment = [...arg,...args]</span><br><span class="line">    <span class="keyword">if</span>(argment.length&lt;fn.length) &#123;</span><br><span class="line">      <span class="keyword">return</span> coriolisFn(fn,argment)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> fn(...argment)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现-2 (抽象程度高！！！)</span></span><br><span class="line"><span class="keyword">const</span> coriolisFn = <span class="function">(<span class="params">targetFn</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params">...args</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(args.length&lt;fn.length) &#123;</span><br><span class="line">      <span class="keyword">return</span> fn.bind(<span class="literal">null</span>, ...args)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> targetFn.apply(<span class="literal">null</span>, args)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>方法2执行流程图（需结合上述bind解析）：</p>
-<p><img src="coriolis.png" alt="未命名-Page-2 (1)"></p>
+<center>
+    <img src="coriolis.png" />
+<center/>
 
         </div>
 
