@@ -167,6 +167,28 @@
         <span class="mobile">2022-03-10 15:11</span>
     </span>
     
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/Typescript/">Typescript</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E8%AE%B0%E5%BD%95/">记录</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
     
 
     
@@ -181,11 +203,51 @@
         
 
         <div class="article-content markdown-body">
-            
+            <h1 id="子类型与父类型"><a href="#子类型与父类型" class="headerlink" title="子类型与父类型"></a>子类型与父类型</h1><h2 id="普通类型"><a href="#普通类型" class="headerlink" title="普通类型"></a>普通类型</h2><p>现有类型Supertype和Subtype，其中类型Subtype是类型Supertype的子类型，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">interface Supertype &#123;</span><br><span class="line">    name: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Subtype extends Supertype &#123;</span><br><span class="line">    age: number;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let superVar: Supertype</span><br><span class="line">let subVar: Subtype</span><br><span class="line"></span><br><span class="line">superVar = subVar // ok</span><br><span class="line">subVar = superVar // error! 类型 &quot;Supertype&quot; 中缺少属性 &quot;age&quot;，但类型 &quot;Subtype&quot; 中需要该属性</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到Subtype在继承Supertype的基础上，又增加了age属性，得出结论：</p>
+<ul>
+<li>子类型的属性比父类型更多更具体</li>
+<li>而从集合上来看，父类型是子类型的子集</li>
+</ul>
+<p>这两点我们需要区分清楚</p>
+<h2 id="联合类型"><a href="#联合类型" class="headerlink" title="联合类型"></a>联合类型</h2><p>但是在联合类型的时候又是怎么样的呢？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">type ParentType = &#x27;a&#x27; | &#x27;b&#x27; | &#x27;c&#x27;</span><br><span class="line">type SonType = &#x27;a&#x27; | &#x27;b&#x27;</span><br><span class="line"></span><br><span class="line">let parentVar: ParentType</span><br><span class="line">let sonVar: SonType</span><br><span class="line"></span><br><span class="line">parentVar = sonVar</span><br><span class="line">sonVar = parentVar // error! parentVar可能为&#x27;c&#x27;,不能将&#x27;c&#x27;赋值给sonVar</span><br></pre></td></tr></table></figure>
+
+<p>因此在联合类型中可以这么理解，ParentType类型更多更宽泛而SonType收束更加具体，因此ParentType为SonType的父类型</p>
+<p>二次总结：</p>
+<ul>
+<li>子类型一定能赋值给父类型</li>
+<li>父类型比子类型更广泛，子类型比父类型更具体</li>
+</ul>
+<p>理解了父子类型看这个会不会更加容易点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">T extends U ? X : Y</span><br></pre></td></tr></table></figure>
+
+<p>基于上述👆我们来看一些例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 类型筛选，过滤出差集类型</span><br><span class="line">type DiffType&lt;T, U&gt; = T extends U ? never : T</span><br><span class="line"></span><br><span class="line">let demonDiff: DiffType&lt;&#x27;a&#x27; | &#x27;b&#x27; | &#x27;c&#x27;, &#x27;c&#x27;| &#x27;f&#x27; &gt; // &#x27;a&#x27; | &#x27;b&#x27;</span><br><span class="line"></span><br><span class="line">// 类型筛选，过滤出交集类型</span><br><span class="line">type Filter&lt;T, U&gt; = T extends U ? T : never</span><br><span class="line"></span><br><span class="line">let demonFilter: Filter&lt;&#x27;c&#x27;, &#x27;c&#x27;| &#x27;f&#x27; &gt; // &#x27;c&#x27;</span><br></pre></td></tr></table></figure>
+
+<h1 id="协变"><a href="#协变" class="headerlink" title="协变"></a>协变</h1><p>含义：允许子类型赋给父类型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">interface Supertype &#123;</span><br><span class="line">    name: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Subtype extends Supertype &#123;</span><br><span class="line">    age: number;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let superVar: Supertype</span><br><span class="line">let subVar: Subtype</span><br><span class="line">let superArr: Supertype[]</span><br><span class="line">let subArr: Subtype[]</span><br><span class="line"></span><br><span class="line">superVar = subVar</span><br><span class="line">superArr = subArr</span><br></pre></td></tr></table></figure>
+
+<h1 id="逆变"><a href="#逆变" class="headerlink" title="逆变"></a>逆变</h1><p>含义：允许父类型赋给子类型</p>
+<p>场景：逆变现象只会出现在函数类型中的函数参数上出现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">interface Supertype &#123;</span><br><span class="line">    name: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Subtype extends Supertype &#123;</span><br><span class="line">    age: number;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let superFun: (superVar: Supertype) =&gt; void</span><br><span class="line">let suberFun: (suberVar: Subtype) =&gt; void</span><br><span class="line"></span><br><span class="line">suberFun = superFun // ok，当我们传入参数suberVar，满足suberFun得参数，也满足superFun的参数</span><br><span class="line">superFun = suberFun // error! 当我们传入参数superVar，满足superFun的参数， 但是不满足suberFun的参数缺少age属性</span><br></pre></td></tr></table></figure>
+
+<h1 id="双向协变"><a href="#双向协变" class="headerlink" title="双向协变"></a>双向协变</h1><p>含义：子类型和父类型之间可以互相赋值</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// ts2.6加入了strictFunctionTypes，默认开始严格模式，只允许函数参数逆变不允许协变，关闭后</span><br><span class="line"></span><br><span class="line">suberFun = superFun // ok</span><br><span class="line">superFun = suberFun // ok</span><br></pre></td></tr></table></figure>
         </div>
 
         
 
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E8%AE%B0%E5%BD%95/">#记录</a>&nbsp;
+                    </li>
+                
+            </ul>
         
 
         
